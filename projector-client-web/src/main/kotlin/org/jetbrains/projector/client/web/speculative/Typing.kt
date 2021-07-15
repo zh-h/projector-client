@@ -27,6 +27,8 @@ import kotlinx.browser.document
 import org.jetbrains.projector.client.common.canvas.Extensions.toFontFaceName
 import org.jetbrains.projector.client.common.misc.ParamsProvider.SCALING_RATIO
 import org.jetbrains.projector.common.protocol.toClient.ServerCaretInfoChangedEvent
+import org.jetbrains.projector.common.protocol.toServer.ClientKeyPressEvent
+import org.jetbrains.projector.common.protocol.toServer.KeyModifier
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 
@@ -36,7 +38,7 @@ sealed class Typing {
 
   abstract fun removeSpeculativeImage()
 
-  abstract fun addChar(char: Char)
+  abstract fun addEventChar(event: ClientKeyPressEvent)
 
   abstract fun dispose()
 
@@ -50,7 +52,7 @@ sealed class Typing {
       // do nothing
     }
 
-    override fun addChar(char: Char) {
+    override fun addEventChar(event: ClientKeyPressEvent) {
       // do nothing
     }
 
@@ -107,7 +109,12 @@ sealed class Typing {
       updateCanvas()
     }
 
-    override fun addChar(char: Char) {
+    override fun addEventChar(event: ClientKeyPressEvent) {
+      if (KeyModifier.CTRL_KEY in event.modifiers
+          || KeyModifier.ALT_KEY in event.modifiers
+          || KeyModifier.META_KEY in event.modifiers
+          || event.char.category.code.startsWith('C')) return
+
       val currentCarets = carets as? ServerCaretInfoChangedEvent.CaretInfoChange.Carets ?: return
 
       val canvas = canvasByIdGetter(currentCarets.editorWindowId) ?: return
@@ -148,7 +155,7 @@ sealed class Typing {
         fillStyle = "#888"  // todo: use a proper color
 
         val stringYPos = firstCaretLocation.y + currentCarets.fontSize  // todo: offsetting by fontSize seems to be not exact
-        fillText(char.toString(), firstCaretLocation.x, stringYPos)
+        fillText(event.char.toString(), firstCaretLocation.x, stringYPos)
       }
 
       speculativeCanvasImage.style.display = "block"
