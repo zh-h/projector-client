@@ -17,3 +17,6 @@ To learn more about modules, check out README files inside them:
 
 ## License
 [MIT](LICENSE.txt).
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B26573%2Fgithub.com%2FJetBrains%2Fprojector-client.svg?type=large)](https://app.fossa.com/projects/custom%2B26573%2Fgithub.com%2FJetBrains%2Fprojector-client?ref=badge_large)

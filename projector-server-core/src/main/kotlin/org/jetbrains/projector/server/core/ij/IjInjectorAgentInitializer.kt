@@ -23,6 +23,8 @@
  */
 package org.jetbrains.projector.server.core.ij
 
+import org.jetbrains.projector.agent.init.IjArgs
+import org.jetbrains.projector.agent.init.toIjArgs
 import org.jetbrains.projector.server.core.ij.md.MarkdownPanelMaker
 import org.jetbrains.projector.util.agent.copyAgentToTempJarAndAttach
 import java.lang.ref.WeakReference
@@ -46,13 +48,13 @@ public object IjInjectorAgentInitializer {
       val mdPanelMakerClass = MarkdownPanelMaker::class.java.name
       val mdPanelMakerMethod = MarkdownPanelMaker::createMarkdownHtmlPanel.name
 
-      val args = buildList {
-        add(isAgent)
-        add(ijClProviderClass)
-        add(ijClProviderMethod)
-        add(mdPanelMakerClass)
-        add(mdPanelMakerMethod)
-      }.joinToString(";")
+      val args = mapOf(
+        IjArgs.IS_AGENT to isAgent,
+        IjArgs.IJ_CL_PROVIDER_CLASS to ijClProviderClass,
+        IjArgs.IJ_CL_PROVIDER_METHOD to ijClProviderMethod,
+        IjArgs.MD_PANEL_MAKER_CLASS to mdPanelMakerClass,
+        IjArgs.MD_PANEL_MAKER_METHOD to mdPanelMakerMethod,
+      ).toIjArgs()
 
       copyAgentToTempJarAndAttach(
         agentJar = this::class.java.getResourceAsStream("/projector-agent/projector-agent-ij-injector.jar"),

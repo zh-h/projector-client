@@ -21,22 +21,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package org.jetbrains.projector.agent.ijInjector
+package org.jetbrains.projector.agent.init
 
-import org.jetbrains.projector.agent.init.toArgsMap
-import org.jetbrains.projector.util.logging.Logger
-import java.lang.instrument.Instrumentation
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-public object IjInjectorAgent {
+class IjArgsTest {
 
-  private val logger = Logger<IjInjectorAgent>()
+  @Test
+  fun mapToStringTest() {
 
-  @JvmStatic
-  public fun agentmain(args: String, instrumentation: Instrumentation) {
-    logger.debug { "IjInjectorAgent agentmain start, args=$args" }
+    val obj = object : Any() {
+      override fun toString(): String {
+        return "customObject"
+      }
+    }
 
-    IjInjector.agentmain(instrumentation, args.toArgsMap())
+    val map = mapOf(
+      "key1" to "stringValue",
+      "key2" to 2,
+      "key3" to 3.14,
+      "key4" to false,
+      "key5" to obj,
+    )
 
-    logger.debug { "IjInjectorAgent agentmain finish" }
+    val argString = map.toIjArgs()
+
+    assertEquals("key1=stringValue;key2=2;key3=3.14;key4=false;key5=customObject", argString)
+  }
+
+  @Test
+  fun stringToMapTest() {
+
+    val argString = "key1=stringValue;key2=2;key3=3.14;key4=false;key5=customObject"
+
+    val map = argString.toArgsMap()
+
+    assertEquals(5, map.size)
+    assertEquals("stringValue", map["key1"])
+    assertEquals("2", map["key2"])
+    assertEquals("3.14", map["key3"])
+    assertEquals("false", map["key4"])
+    assertEquals("customObject", map["key5"])
   }
 }
