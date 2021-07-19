@@ -109,11 +109,15 @@ sealed class Typing {
       updateCanvas()
     }
 
+    private fun shouldSkipEvent(event: ClientKeyPressEvent): Boolean {
+      return KeyModifier.CTRL_KEY in event.modifiers
+             || KeyModifier.ALT_KEY in event.modifiers
+             || KeyModifier.META_KEY in event.modifiers
+             || event.char.category.fromOtherUnicodeGroup
+    }
+
     override fun addEventChar(event: ClientKeyPressEvent) {
-      if (KeyModifier.CTRL_KEY in event.modifiers
-          || KeyModifier.ALT_KEY in event.modifiers
-          || KeyModifier.META_KEY in event.modifiers
-          || event.char.category.code.startsWith('C')) return
+      if (shouldSkipEvent(event)) return
 
       val currentCarets = carets as? ServerCaretInfoChangedEvent.CaretInfoChange.Carets ?: return
 
