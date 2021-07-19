@@ -109,6 +109,13 @@ sealed class Typing {
       updateCanvas()
     }
 
+    /**
+     * Skip drawing speculative symbol when we cannot be sure char will be actually drawn on the server.
+     * Potentially invisible inputted chars:
+     *
+     * - Chars inputted with any of Ctrl/Alt/Meta modifiers (Example: Ctrl+C)
+     * - Chars with Unicode category from "Other" group (Example: Esc or Meta)
+     */
     private fun shouldSkipEvent(event: ClientKeyPressEvent): Boolean {
       return KeyModifier.CTRL_KEY in event.modifiers
              || KeyModifier.ALT_KEY in event.modifiers
