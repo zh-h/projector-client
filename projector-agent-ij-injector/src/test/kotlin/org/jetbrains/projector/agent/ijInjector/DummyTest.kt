@@ -21,56 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import org.gradle.jvm.tasks.Jar
+package org.jetbrains.projector.agent.ijInjector
 
-plugins {
-  kotlin("jvm")
-  jacoco
-}
+import kotlin.test.Test
+import kotlin.test.assertTrue
 
-jacoco {
-  toolVersion = "0.8.7"
-}
-
-tasks.withType<JacocoReport> {
-  reports {
-    xml.isEnabled = true
-    xml.destination = file(layout.buildDirectory.dir("../../JacocoReports/jacocoReportAgentIjInjector.xml"))
-    csv.required.set(false)
-    html.outputLocation.set(layout.buildDirectory.dir("jacocoHtmlProjectorClient"))
+class DummyTest {
+  @Test
+  fun `dummy test for coverage building`() {
+    assertTrue(true)
   }
-}
-
-kotlin {
-  explicitApi()
-}
-
-val javassistVersion: String by project
-
-dependencies {
-  implementation(project(":projector-agent-common"))
-  implementation(project(":projector-util-logging"))
-  implementation("org.javassist:javassist:$javassistVersion")
-  testImplementation(kotlin("test"))
-}
-
-val agentClass = "org.jetbrains.projector.agent.ijInjector.IjInjectorAgent"
-
-tasks.withType<Jar> {
-  manifest {
-    attributes(
-      "Can-Redefine-Classes" to true,
-      "Can-Retransform-Classes" to true,
-      "Agent-Class" to agentClass
-    )
-  }
-
-  exclude("META-INF/versions/9/module-info.class")
-
-  from(inline(configurations.runtimeClasspath))
-}
-
-tasks.test {
-  useJUnitPlatform()
-  finalizedBy(tasks.jacocoTestReport)
 }
